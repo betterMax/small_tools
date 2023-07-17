@@ -5,24 +5,24 @@ import time
 # 加载工作簿
 wb = load_workbook(filename='Resource/target.xlsx', data_only=True)
 
-mode = 'work'
+mode = 'reset'
 # 待处理的sheet列表
 if mode == 'work':
-    sheets = ['判断', '实际']
+    columns = ['A', 'C']
 else:
-    sheets = ['判断', '实际', '虚拟']
+    columns = ['A', 'C', 'E']
 
-for sheet in sheets:
+for column in columns:
     # 选择工作表
-    ws = wb[sheet]
+    ws = wb['Main']
 
     # 初始化行号
-    row = 2
-    
+    row = 3
+
     # 循环处理每一行，直到A列没有数据
-    while ws[f'A{row}'].value is not None:
+    while ws[f'{column}{row}'].value is not None:
         # 读取单元格
-        code = ws[f'A{row}'].value
+        code = ws[f'{column}{row}'].value
         print(f'update {code} price')
         latest_price = get_latest_price(code)
 
@@ -32,8 +32,10 @@ for sheet in sheets:
         except ValueError:
             print(f'Warning: Cannot convert price "{latest_price}" to number. Please check the price.')
         else:
+            # 计算右侧列名
+            right_column = chr(ord(column) + 1)
             # 如果转换成功，更新价格
-            ws[f'B{row}'].value = price
+            ws[f'{right_column}{row}'].value = price
 
         # 处理下一行
         row += 1
