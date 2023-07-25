@@ -6,6 +6,11 @@ from selenium.webdriver.common.by import By
 from openpyxl import load_workbook
 import time
 
+
+def split_factors(factors_str):
+    # 将逗号分隔的因子字符串拆分为列表
+    return [factor.strip() for factor in factors_str.split(',')]
+
 def excel_column_to_list(file_path, column_name):
     # 读取Excel文件
     df = pd.read_excel(file_path)
@@ -13,10 +18,18 @@ def excel_column_to_list(file_path, column_name):
     # 获取指定列的数据
     column_data = df[column_name].tolist()
 
-    # 在每个元素外添加单引号
-    # column_data = ["'" + str(item) + "'" for item in column_data]
+    # 用集合来存储所有因子，保证不重复
+    unique_factors = set()
 
-    return column_data
+    # 将每个单元格的因子拆分并添加到结果列表中
+    for factors_str in column_data:
+        factors_list = split_factors(factors_str)
+        unique_factors.update(factors_list)
+
+    # 将集合转换为列表并进行排序
+    sorted_factors = sorted(list(unique_factors))
+
+    return sorted_factors
 
 
 def get_urls(code, test_links=False):
